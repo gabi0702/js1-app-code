@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import Web3 from "web3";
 import StartGame from "./components/StartGame";
-// import detectEthereumProvider from "@metamask/detect-provider";
-// import { loadContract } from "./utils/load-contract";
+import detectEthereumProvider from "@metamask/detect-provider";
+import { loadContract } from "./utils/load-contract";
 import gambling from "../src/assets/gambling1.png";
 
 import "./App.css";
@@ -20,38 +20,38 @@ function App() {
 
   //* The variable that update the status of the button play
   //* accorded to the return of the balance checker function
-  const [canPlay, setCanPlay] = useState(true);
+  const [canPlay, setCanPlay] = useState(false);
 
   // #### SMART CONTRACT LOADER VARIABLE
-  // const [web3Api, setWeb3Api] = useState({
-  //   provider: null,
-  //   web3: null,
-  //   contract: null,
-  // });
+  const [web3Api, setWeb3Api] = useState({
+    provider: null,
+    web3: null,
+    contract: null,
+  });
 
   // ### NEED TO BE ON THE SMART CONTRACT
   // const minimumBalance = 50;
 
   // #### SMART CONTRACT LOADER #####
   // // We need to check why it's not working
-  // useEffect(() => {
-  //   const loadProvider = async () => {
-  //     const provider = await detectEthereumProvider();
-  //     const contract = await loadContract("Blackjack", provider);
+  useEffect(() => {
+    const loadProvider = async () => {
+      const provider = await detectEthereumProvider();
+      const contract = await loadContract("Blackjack", provider);
 
-  //     if (provider) {
-  //       setWeb3Api({
-  //         provider: provider,
-  //         web3: new Web3(provider),
-  //         contract: contract,
-  //       });
-  //       console.log(contract);
-  //     } else {
-  //       console.log("Please install Metamask");
-  //     }
-  //   };
-  //   loadProvider();
-  // }, [isConnected]);
+      if (provider) {
+        setWeb3Api({
+          provider: provider,
+          web3: new Web3(provider),
+          contract: contract,
+        });
+        console.log(contract);
+      } else {
+        console.log("Please install Metamask");
+      }
+    };
+    loadProvider();
+  }, [isConnected]);
 
   //* The function is disconnecting the Dapp from the userWallet and return the home page of the game
   async function disconnectWallet() {
@@ -59,7 +59,7 @@ function App() {
     setBalance("");
     setIsConnected(false);
     // setExample("");
-    setIsConnected(false);
+    // setIsConnected(false);
   }
 
   //* The function runs when the user want to connect his wallet to start playing
@@ -85,11 +85,17 @@ function App() {
             // Update the account variable
             setAccount(accounts[0]);
             // Get the wallet account balance
+            //* We wanted to check balance on the smart contract but there is some issues.
+            //* const getBalanceSum = async () => {
+            //*   const { contract, web3 } = web3Api;
+            //*   setBalance(await contract.getBalance({ value: accounts }));
+            //* };
+            //* getBalanceSum();
             const balance = await web3.eth.getBalance(accounts[0]);
             // Update the account balance
             setBalance(Web3.utils.fromWei(balance, "ether"));
             // Move the user to the next page
-            // #### HERE WE NEED TO RUN THE SMART CONTRACT FUNCTION THAT CHECKS
+            setCanPlay(checkTheBalance());
             // #### IF THE BALANCE IS ANOUGH
             setIsConnected(true);
           } catch (error) {
@@ -107,6 +113,21 @@ function App() {
         "There is problem to connect to your wallet check if the truffle application is running"
       );
     }
+  }
+
+  // יש לבדוק איך לכבר את סולידיטי לריאקט
+  async function checkTheBalance() {
+    const web3 = new Web3(window.ethereum);
+
+    const myContract = new web3.eth.Contract("Blackjack.abi", account);
+
+    const getBalance = async () => {
+      const balance1 = await myContract.methods.balance().call();
+      console.log(balance1);
+      alert(balance1);
+    };
+    setBalance(getBalance());
+    // await contract.methods.checkBalance(balanceAccount).call();
   }
 
   // ############# THIS CODE NEED TO BE ON THE SMART CONTRACT #########
