@@ -1,7 +1,13 @@
 .App {
   text-align: center;
+  align-items: center;
+  align-content: center;
+  display: flex;
+  flex-direction: column;
 }
-
+body{
+  background-color: #f5f9fb;
+}
 .App-logo {
   height: 40vmin;
   pointer-events: none;
@@ -35,4 +41,60 @@
   to {
     transform: rotate(360deg);
   }
+}
+.container{
+  margin-top: 10px;
+  width: 400px;
+  border: 1px solid black;
+  padding: 20px;
+  border-radius: 10px;
+  background-color: #eef3f7;
+}
+.title, .subtitle{
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+.subtitle{
+  display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	justify-content: center;
+	align-items: center;
+	align-content: stretch;
+
+}
+.txt-subtitle{
+  color: rgba(255, 0, 0, 0.755);
+  margin-right: 5px;
+  margin-left: 5px;
+}
+.txt{
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 10px;
+  margin-top:-20px;
+}
+.disconnect-btn{
+  margin-top: 20px;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.btn:hover{
+  background-color:red;
+}
+#low-balance-error{
+  color: red;
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+#input-div{
+  margin-top: 40px;
+}
+.bg-game{
+  background-color: darkgreen;
+  height: 300px;
 }
