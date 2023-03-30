@@ -15,14 +15,11 @@ function App() {
   //* Boolean variable for switching between pages
   const [isConnected, setIsConnected] = useState(false);
   const [index, setIndex] = useState(false);
-  // The txt that the user see on the next page if he can play or not
-  // const [example, setExample] = useState("");
 
-  //* The variable that update the status of the button play
-  //* accorded to the return of the balance checker function
+  //* The variable that update the status of the button play accorded to the return of the balance checker function
   const [canPlay, setCanPlay] = useState(false);
 
-  // #### SMART CONTRACT LOADER VARIABLE
+  // SMART CONTRACT LOADER VARIABLE
   const [web3Api, setWeb3Api] = useState({
     provider: null,
     web3: null,
@@ -54,8 +51,6 @@ function App() {
     setAccount("");
     setBalance(0);
     setIsConnected(false);
-    // setExample("");
-    // setIsConnected(false);
   }
 
   //* The function runs when the user want to connect his wallet to start playing
@@ -105,7 +100,6 @@ function App() {
     return String(Math.ceil(blc1));
   }
 
-  // יש לבדוק איך לחבר את סולידיטי לריאקט
   async function checkAnoughBalance(acc1) {
     const { contract, web3 } = web3Api;
     console.log("check balance function ", acc1);
@@ -120,40 +114,6 @@ function App() {
     setCanPlay(result);
   }
 
-  // ############# THIS CODE NEED TO BE ON THE SMART CONTRACT #########
-  // // This function checks if the balance is greater than the minimum to play and set the canplay variable true of false.
-  // // WE NEED TO CALL THE SMART CONTRACT AND GET FROM IT true OR false
-  // // THE RETURN IS UPDATING THE 'EXEMPLE' VARIABLE AND LET THE USER PLAY OR NOT
-  // useEffect(() => {
-  //   if (balance >= minimumBalance) {
-  //     setCanPlay(true);
-  //   }
-  // }, [balance]);
-  // ###################################################################
-
-  // // This function checks if canPlay variable is true or false and return if can play.
-  // function checkIfCanPlay() {
-  //   if (canPlay) {
-  //     if (account > 0) {
-  //       console.log("Can Play");
-  //       setExample("You Can Play!");
-  //       return true;
-  //     } else {
-  //       console.log("Cannot Play...");
-  //       setExample("You Cannot Play...");
-  //       return false;
-  //     }
-  //   } else if (canPlay === false && balance !== "") {
-  //     console.log("Cannot Play...");
-  //     setExample("You Cannot Play...");
-  //     return false;
-  //   } else {
-  //     console.log("Metamask wallet not detected.");
-  //     setExample("Metamask wallet not detected.");
-  //     return false;
-  //   }
-  // }
-
   return (
     <div className="App">
       <div className="container">
@@ -166,6 +126,8 @@ function App() {
             disconnect={disconnectWallet}
             canPlay={canPlay}
             setCanPlay={setCanPlay}
+            checkAnoughBalance={checkAnoughBalance}
+            web3Api={web3Api}
             // checkIfCanPlay={checkIfCanPlay}
             // example={example}
           />

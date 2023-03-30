@@ -114,14 +114,19 @@ contract Blackjack{
         return balanceChecker;
     }
 
+    event inpuchecker(bool inputChecked);
     //* The function gets from the frontend sum entered to play and verify if it's more than the minimum and less than the maximum
-    function checkInput(uint input) public returns (bool){
-        if(input < minimum || input > maximum){
+    function checkInput(uint bal, uint input) public returns (bool){
+        playerBalance = bal;
+        if((input < minimum || input > maximum)){
             inputChecked = false;
-        }else{
+        } 
+        if(input >= minimum && input <= maximum && input < bal)
+        {
             inputChecked = true;
             paymentSum = input;
         }
+        emit inpuchecker(inputChecked);
         return inputChecked;
     }
 

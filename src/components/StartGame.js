@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Game from "./Game";
+import Web3 from "web3";
+
 import "../App.css";
 
 const StartGame = (props) => {
@@ -13,8 +15,11 @@ const StartGame = (props) => {
   const canPlay = props.canPlay;
   //* usestate to canplay variable as props from parent to update the view
   const setCanPlay = props.setCanPlay;
+  const checkAnoughBalance = props.checkAnoughBalance;
+
+  const web3Api = props.web3Api;
   //* The input sum to play
-  const [sumtoPlay, setSumToPlay] = useState();
+  const [sumtoPlay, setSumToPlay] = useState("");
   //* The variable that update the view of the page (if we see the input field or not)
   const [showInput, setShowInput] = useState(false);
   // The variable check the input in each modification and get a boolean value to update show and hide of the start playing button
@@ -24,13 +29,9 @@ const StartGame = (props) => {
   //* The variable update the state of the page and returns the table view
   let [goToTable, setGoToTable] = useState(false);
 
-  // const isConnected = props.isConnected;
-  // const setIsConnected = props.setIsConnected;
-  // const checkIfCanPlay = props.checkIfCanPlay;
-  // const minSumForGame = 0.05;
-  // const maxSumForGame = 2;
+  const [loaded, setLoaded] = useState(true);
+
   // const [letsPlay, setLetsPlay] = useState(false);
-  // const example = props.example;
 
   //* This function call the parent disconnect function and move the user to the home page
   function disconnectWallet() {
@@ -43,26 +44,46 @@ const StartGame = (props) => {
     setShowInput(true);
   }
 
-  // ##### THIS FUNCTION NEEDS TO CALL THE SMART CONTRACT FUNCTION FOR CHECKING THE INPUT SUM AND UPDATE THE VIEW TO GAME OR NOT
-  function startGame() {
-    if (
-      true
-      // THE SMART CONTRACT CHECK IF THE BALANCE IS OKAY AND UPDATE THE VIEW STATE VARIABLE
-      // balance > 50 &&
-    ) {
+  // THIS FUNCTION NEEDS TO CALL THE SMART CONTRACT FUNCTION FOR CHECKING THE INPUT SUM AND UPDATE THE VIEW TO GAME OR NOT
+  async function startGame() {
+    const rs1 = await checkInput();
+    console.log(rs1);
+    if (rs1) {
       setGoToTable(true);
       // setLetsPlay(true);
     } else {
+      setGoToTable(false);
       // setLetsPlay(false);
     }
   }
 
-  // ###  THE FUNCTION RUNS THE SMART CONTRACT BALANCE CHECKER FUNCTION AND UPDATE THE VIEW STATE VARIABLE
-  async function checkBalanceAgain() {}
+  // The function runs the smart contract balance checker once
+  async function checkBalanceAgain() {
+    await checkAnoughBalance(account);
+  }
 
+  async function checkInput() {
+    const { contract, web3 } = web3Api;
+    const sm = await web3.utils.toWei(sumtoPlay, "ether");
+    const bal = await web3.utils.toWei(balance, "ether");
+    const check = await contract.checkInput(String(bal), String(sm), {
+      from: account,
+    });
+    const result = check.logs[0].args["inputChecked"];
+    return result;
+  }
+
+  function checkIfInputIsGood(val) {
+    if (Number(val) > 1 || Number(val) < 0.01) {
+      setLoaded(false);
+      setInputChecker(false);
+    } else {
+      setLoaded(true);
+      setInputChecker(true);
+    }
+  }
   return (
     <div>
-      {/* <Game /> */}
       {goToTable ? (
         <Game disconnectWallet={disconnectWallet} />
       ) : (
@@ -85,7 +106,6 @@ const StartGame = (props) => {
           )}
           {showInput ? (
             <div id="input-div">
-              {/* <h3>example</h3> */}
               <label htmlFor="sumToPlay">
                 Enter the sum of eth you want to play:
               </label>
@@ -94,18 +114,13 @@ const StartGame = (props) => {
                 id="sumToPlay"
                 placeholder="0.01 Eth"
                 value={sumtoPlay}
-                // ### CONNECT TO SMART CONTRACT FOR CHECKING INPUT
                 onChange={async (e) => {
                   setStart(false);
                   setSumToPlay(e.target.value);
-                  if ("HERE THE FUNCTION TO CONTRACT and give it sumToPlay") {
-                    setInputChecker(true);
-                  } else {
-                    setInputChecker(false);
-                  }
+                  checkIfInputIsGood(e.target.value);
                 }}
               />
-              {canPlay ? (
+              {canPlay && inputChecker ? (
                 <button onClick={startGame}>Start Playing</button>
               ) : (
                 <div></div>
@@ -116,11 +131,19 @@ const StartGame = (props) => {
               ) : (
                 <div>
                   {inputChecker ? (
-                    <div>You Can Play Now</div>
+                    <div>{console.log("The player can play")}</div>
                   ) : (
                     <div>
-                      You Cannot Play, change the sum your entered...
-                      <div>the min is 0.01eth and the max is 2eth to play</div>
+                      {loaded ? (
+                        <div></div>
+                      ) : (
+                        <div>
+                          You Cannot Play, change the sum your entered...
+                          <div>
+                            the min is 0.01eth and the max is 1eth to play
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -129,7 +152,6 @@ const StartGame = (props) => {
           ) : (
             <div></div>
           )}
-          {/* Check if account is not empty and show the disconnect button */}
           {account ? (
             <button className="disconnect-btn" onClick={disconnectWallet}>
               Disconnect
