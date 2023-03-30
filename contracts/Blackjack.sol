@@ -8,6 +8,7 @@ contract Blackjack{
     address public owner;
     //* keep the minimum balance to play
     uint private minBalance = 10000000000000000000;
+
     //* this is the minimum sum to play
     uint private minimum = 10000000000000000;
     //* this is the maximum sum to play
@@ -88,20 +89,28 @@ contract Blackjack{
         owner = newOwner;
     }
 
+    // We need to check why it's not rendering the balance value
+    uint public playerBalance = 0;
+    event initBalance(uint playerBalance);
     //* This function gets the player address and returns the player balance
     function getBalance(address payable addrs) public  returns(uint){
         playerAddress = addrs;
+        playerBalance = playerAddress.balance;
+        emit initBalance(playerBalance);        
         return playerAddress.balance;
+
     }   
 
+    event initchecker(bool balanceChecker);
     //* This function get the player address and check if he has anough balance in the wallet and returns true or false to the react code
-    function checkBalance() public returns(bool){
-        if(playerAddress.balance >= minBalance){
+    function checkBalance(uint bal) public returns(bool){
+        if(bal >= minBalance){
             balanceChecker = true;
         }
         else{
             balanceChecker = false;
         }
+        emit initchecker(balanceChecker);
         return balanceChecker;
     }
 
@@ -116,7 +125,7 @@ contract Blackjack{
         return inputChecked;
     }
 
-    //* hecks if 2 strings are equals (helper function)
+    //* Checks if 2 strings are equals (helper function)
     function compareStrings(string memory a, string memory b) public pure returns (bool) {
     return (keccak256(abi.encodePacked((a))) == keccak256(abi.encodePacked((b))));
     }

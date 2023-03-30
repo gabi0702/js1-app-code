@@ -1,11 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import Web3 from "web3";
 import StartGame from "./components/StartGame";
 import detectEthereumProvider from "@metamask/detect-provider";
 import { loadContract } from "./utils/load-contract";
 import gambling from "../src/assets/gambling1.png";
-// import { ethers } from "ethers";
-// import Blackjack_abi from "./contracts/Blackjack.json";
 
 import "./App.css";
 
@@ -13,7 +11,7 @@ function App() {
   //* Wallet account number variable
   const [account, setAccount] = useState("");
   //* wallet balance sum variable
-  const [balance, setBalance] = useState(0);
+  const [balance, setBalance] = useState("");
   //* Boolean variable for switching between pages
   const [isConnected, setIsConnected] = useState(false);
   const [index, setIndex] = useState(false);
@@ -31,10 +29,7 @@ function App() {
     contract: null,
   });
 
-  // ### NEED TO BE ON THE SMART CONTRACT
-  // const minimumBalance = 50;
-
-  // SMART CONTRACT LOADER #####
+  // SMART CONTRACT LOADER
   useEffect(() => {
     const loadProvider = async () => {
       const provider = await detectEthereumProvider();
@@ -63,24 +58,6 @@ function App() {
     // setIsConnected(false);
   }
 
-  // The function loads the contract
-  // const loadProvider = async () => {
-  //   const provider = await detectEthereumProvider(); // The function 'detectEthereumProvider' is detecting the metamask account provider.
-  //   const contract = await loadContract("Blackjack", provider); // We define the contract and use the loadContract function
-  //   // We check if the provider is not empty (got a response)
-  //   if (provider) {
-  //     setWeb3Api({
-  //       provider: provider,
-  //       web3: new Web3(provider),
-  //       contract: contract,
-  //     });
-  //     console.log("Contract Details: ", contract);
-  //     console.log("The contract has been loaded");
-  //   } else {
-  //     console.log("Please install Metamask");
-  //   }
-  // };
-
   //* The function runs when the user want to connect his wallet to start playing
   function connectFunction() {
     if (isConnected === false) {
@@ -97,53 +74,50 @@ function App() {
                 },
               ],
             });
-            // Get the wallet account number
-            const accounts = await web3.eth.getAccounts();
+            const accounts = await web3.eth.getAccounts(); // Get the wallet account address
             setIndex(true);
-            // Update the account variable
+            const acc = accounts[0]; // Update the account variable
+            console.log("account number", acc);
 
-            console.log("account number", accounts[0]);
-            checkTheBalance(accounts[0]);
-            // Load the contract to the react app
-            // await loadProvider();
-            // await checkTheBalance();
-            // const bal = await contract.getBalance(account[0], {from: accounts[0]});
-            // console.log(bal);
+            checkAnoughBalance(acc);
             // setBalance(bal);
-
-            // Move the user to the next page
-            // setCanPlay(checkTheBalance());
-            // checkTheBalance(accounts);
-            // #### IF THE BALANCE IS ANOUGH
           } catch (error) {
             console.error(error);
           }
         } else {
-          // If metamask pluggin was not found it return an alert to the user.
-          alert("Please install MetaMask!");
+          alert("Please install MetaMask!"); // If metamask pluggin was not found it return an alert to the user.
         }
       }
-      // Calls the connection funtion
-      loadWeb3();
+      loadWeb3(); // Calls the connection funtion
     } else {
       alert(
         "There is problem connecting to your wallet. Check if the truffle application is running."
       );
     }
   }
-  // יש לבדוק איך לחבר את סולידיטי לריאקט
-  async function checkTheBalance(accounts) {
+
+  async function loadBalance(acc2) {
     const { contract, web3 } = web3Api;
-    // const balanceToCheck = web3.utils.toWei(balance, "ether");
-    console.log("check balance function ");
-    setAccount(accounts[0]);
-    const bal = await contract.getBalance(accounts[0], { from: account });
-    console.log(bal);
-    setBalance(bal);
-    // const ch = await contract.checkBalance(balance, { from: account });
-    // console.log(ch);
-    // setCanPlay(ch);
-    // console.log(canPlay);
+    let blc1 = await web3.eth.getBalance(acc2);
+    let blc = web3.utils.fromWei(blc1, "ether");
+    setBalance(blc);
+    console.log(String(Math.ceil(blc1)) + typeof String(Math.ceil(blc1)));
+    return String(Math.ceil(blc1));
+  }
+
+  // יש לבדוק איך לחבר את סולידיטי לריאקט
+  async function checkAnoughBalance(acc1) {
+    const { contract, web3 } = web3Api;
+    console.log("check balance function ", acc1);
+    setAccount(acc1);
+    const bal = await contract.checkBalance(await loadBalance(acc1), {
+      from: acc1,
+    });
+    setIsConnected(true);
+    const result = bal.logs[0].args["balanceChecker"];
+    console.log(result);
+    console.log(acc1);
+    setCanPlay(result);
   }
 
   // ############# THIS CODE NEED TO BE ON THE SMART CONTRACT #########
