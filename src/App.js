@@ -6,6 +6,7 @@ import { loadContract } from "./utils/load-contract";
 import gambling from "../src/assets/gambling1.png";
 
 import "./App.css";
+import contract from "@truffle/contract";
 
 function App() {
   //* Wallet account number variable
@@ -48,6 +49,9 @@ function App() {
 
   //* The function is disconnecting the Dapp from the userWallet and return the home page of the game
   async function disconnectWallet() {
+    const { contract } = web3Api;
+    await contract.finishTheGame({ from: account });
+    console.log("the function for reseting the cards has been activated");
     setAccount("");
     setBalance(0);
     setIsConnected(false);
@@ -141,7 +145,7 @@ function App() {
               <p className="txt">
                 In connecting your Metamask wallet you agree to{" "}
                 <a
-                  href="https://www.w3schools.com"
+                  href="https://iclg.com/practice-areas/gambling-laws-and-regulations/israel"
                   rel="noreferrer"
                   target="_blank"
                 >

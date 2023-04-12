@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import Game from "./Game";
+
 import Web3 from "web3";
 
 import "../App.css";
+import Spinner from "./Spinner";
 
 const StartGame = (props) => {
   //* Wallet account number variable prop from parent
@@ -30,11 +32,17 @@ const StartGame = (props) => {
   let [goToTable, setGoToTable] = useState(false);
 
   const [loaded, setLoaded] = useState(true);
-
-  // const [letsPlay, setLetsPlay] = useState(false);
+  const [playerCardsPics, setPlayerCardsPics] = useState();
+  const [playerCount, setPlayerCount] = useState(0);
+  const [dealerCardsPics, setDealerCardsPics] = useState();
+  const [dealerCount, setDealerCount] = useState(0);
+  const [index, setIndex] = useState(true);
+  const [showSpinner, setShowSpinner] = useState(false);
 
   //* This function call the parent disconnect function and move the user to the home page
-  function disconnectWallet() {
+  async function disconnectWallet() {
+    // const { contract } = web3Api;
+    // await contract.finishTheGame({ from: account });
     setCanPlay(!canPlay);
     disconnect();
   }
@@ -46,31 +54,84 @@ const StartGame = (props) => {
 
   // THIS FUNCTION NEEDS TO CALL THE SMART CONTRACT FUNCTION FOR CHECKING THE INPUT SUM AND UPDATE THE VIEW TO GAME OR NOT
   async function startGame() {
-    const rs1 = await checkInput();
-    console.log(rs1);
+    setShowSpinner(true);
+    const { contract } = web3Api;
+    const rs1 = true;
     if (rs1) {
+      const distributCardToPlayer =
+        await contract.generateTwoRandomNumbersToPlayer({
+          from: account,
+        });
+      console.log(
+        "Called the generate cards to player: ",
+        distributCardToPlayer
+      );
+      const playerCountCards = await contract.showPlayerCounter({
+        from: account,
+      });
+      console.log(
+        "dealer count cards",
+        playerCountCards.logs[0].args[0].words[0]
+      );
+
+      setPlayerCount(playerCountCards.logs[0].args[0].words[0]);
+
+      const showPlayerCardUrls = await contract.showPlayerCardUrls({
+        from: account,
+      });
+      console.log("Called the show player cards URLs: ", showPlayerCardUrls);
+      setPlayerCardsPics(showPlayerCardUrls);
+
+      const distributCardToDealer =
+        await contract.generateTwoRandomNumbersToDealer({
+          from: account,
+        });
+      console.log(
+        "Called the generate cards to dealer: ",
+        distributCardToDealer
+      );
+
+      const dealerCountCards = await contract.showDealerCounter({
+        from: account,
+      });
+      console.log(
+        "dealer count cards",
+        dealerCountCards.logs[0].args[0].words[0]
+      );
+      setDealerCount(dealerCountCards.logs[0].args[0].words[0]);
+
+      const showDealerCardUrls = await contract.showDealerCardUrls({
+        from: account,
+      });
+      setDealerCardsPics(showDealerCardUrls);
+      console.log("Called the show dealer cards URLs: ", showDealerCardUrls);
+      // ## WE NEED TO SET THE DEALER CARDS URLS!
+      // setPlayerCardsPics(showDealerCardUrls);
+
+      console.log("Player Cards Urls are: ", showPlayerCardUrls);
+
+      //##############################################################################
+      // let len = distributCardToPlayer.logs[0].args[0];
+      // let len1 = len.length;
+      // for (let i = 0; i < len1; i++) {
+      //   setPlayerCardsPics([
+      //     playerCardsPics,
+      //     ...distributCardToPlayer.logs[0].args[0][i],
+      //   ]);
+      //   console.log(distributCardToPlayer.logs[0].args[0][i]);
+      // }
+      //##############################################################################
+      setShowSpinner(false);
+
       setGoToTable(true);
-      // setLetsPlay(true);
     } else {
       setGoToTable(false);
-      // setLetsPlay(false);
     }
   }
 
   // The function runs the smart contract balance checker once
   async function checkBalanceAgain() {
     await checkAnoughBalance(account);
-  }
-
-  async function checkInput() {
-    const { contract, web3 } = web3Api;
-    const sm = await web3.utils.toWei(sumtoPlay, "ether");
-    const bal = await web3.utils.toWei(balance, "ether");
-    const check = await contract.checkInput(String(bal), String(sm), {
-      from: account,
-    });
-    const result = check.logs[0].args["inputChecked"];
-    return result;
   }
 
   function checkIfInputIsGood(val) {
@@ -82,82 +143,103 @@ const StartGame = (props) => {
       setInputChecker(true);
     }
   }
+
   return (
     <div>
-      {goToTable ? (
-        <Game disconnectWallet={disconnectWallet} />
+      {showSpinner ? (
+        <Spinner />
       ) : (
         <div>
-          <h2>We have found a wallet!</h2>
-          <p>Account: {account}</p>
-          <p>Balance: {balance} ETH</p>
-          {canPlay ? (
-            // If the balance is anough it shows the lets play button
-            <button onClick={openInputField}>Let's Play</button>
+          {goToTable ? (
+            <Game
+              disconnectWallet={disconnectWallet}
+              showPlayerCardUrls={playerCardsPics}
+              showPlayerCount={playerCount}
+              showDealerCardUrls={dealerCardsPics}
+              showDealerCount={dealerCount}
+              setDealerCount={setDealerCount}
+              index={index}
+              setIndex={setIndex}
+              web3Api={web3Api}
+              account={account}
+              setDealerCardsPics={setDealerCardsPics}
+              hitCard={""}
+              sumtoPlay={sumtoPlay}
+            />
           ) : (
-            // If the balance is not anough it shows the check again btn and the error text
             <div>
-              <div id="low-balance-error">
-                You don't have anough balance in your metamask wallet to play
-                the blackjack game.
-              </div>
-              <button onClick={checkBalanceAgain}>Check Again</button>
-            </div>
-          )}
-          {showInput ? (
-            <div id="input-div">
-              <label htmlFor="sumToPlay">
-                Enter the sum of eth you want to play:
-              </label>
-              <input
-                type="number"
-                id="sumToPlay"
-                placeholder="0.01 Eth"
-                value={sumtoPlay}
-                onChange={async (e) => {
-                  setStart(false);
-                  setSumToPlay(e.target.value);
-                  checkIfInputIsGood(e.target.value);
-                }}
-              />
-              {canPlay && inputChecker ? (
-                <button onClick={startGame}>Start Playing</button>
+              <h2>We have found a wallet!</h2>
+              <p>Account: {account}</p>
+              <p>Balance: {balance} ETH</p>
+              {canPlay ? (
+                // If the balance is anough it shows the lets play button
+                <button onClick={openInputField}>Let's Play</button>
               ) : (
-                <div></div>
-              )}
-
-              {start ? (
-                <div></div>
-              ) : (
+                // If the balance is not anough it shows the check again btn and the error text
                 <div>
-                  {inputChecker ? (
-                    <div>{console.log("The player can play")}</div>
+                  <div id="low-balance-error">
+                    You don't have anough balance in your metamask wallet to
+                    play the blackjack game.
+                  </div>
+                  <button onClick={checkBalanceAgain}>Check Again</button>
+                </div>
+              )}
+              {showInput ? (
+                <div id="input-div">
+                  <label htmlFor="sumToPlay">
+                    Enter the sum of eth you want to play:
+                  </label>
+                  <input
+                    type="number"
+                    id="sumToPlay"
+                    placeholder="0.01 Eth"
+                    value={sumtoPlay}
+                    onChange={async (e) => {
+                      setStart(false);
+                      setSumToPlay(e.target.value);
+                      checkIfInputIsGood(e.target.value);
+                    }}
+                  />
+                  {canPlay && inputChecker ? (
+                    <button onClick={startGame}>Start Playing</button>
+                  ) : (
+                    <div></div>
+                  )}
+
+                  {start ? (
+                    <div></div>
                   ) : (
                     <div>
-                      {loaded ? (
-                        <div></div>
+                      {inputChecker ? (
+                        <div>{console.log("The player can play")}</div>
                       ) : (
                         <div>
-                          You Cannot Play, change the sum your entered...
-                          <div>
-                            the min is 0.01eth and the max is 1eth to play
-                          </div>
+                          {loaded ? (
+                            <div></div>
+                          ) : (
+                            <div>
+                              You Cannot Play, change the sum your entered...
+                              <div>
+                                the min is 0.01eth and the max is 1eth to play
+                              </div>
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>
                   )}
                 </div>
+              ) : (
+                <div></div>
+              )}
+              {account ? (
+                <button className="disconnect-btn" onClick={disconnectWallet}>
+                  Disconnect
+                </button>
+              ) : (
+                <div>No wallet connected.</div>
               )}
             </div>
-          ) : (
-            <div></div>
-          )}
-          {account ? (
-            <button className="disconnect-btn" onClick={disconnectWallet}>
-              Disconnect
-            </button>
-          ) : (
-            <div>No wallet connected.</div>
           )}
         </div>
       )}

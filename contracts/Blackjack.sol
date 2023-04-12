@@ -3,7 +3,7 @@ pragma solidity >=0.4.22 <0.9.0;
 
 
 contract Blackjack{
-    address payable public playerAddress;
+   address payable public playerAddress;
     //* Keep the owner address
     address public owner;
     //* keep the minimum balance to play
@@ -157,15 +157,20 @@ contract Blackjack{
     }
 
     // This function returns the cards of the player
-    function showPlayerCardvalue() public view returns(uint[] memory){
-        return playerCardValues;
+    event returnPlayerCardvale(uint[]);
+    function showPlayerCardvalue() public returns(uint[] memory){
+        emit returnPlayerCardvale(playerCardValues);
+        // return playerCardValues;
     }
     function showPlayerCardUrls() public view returns(string[] memory){
         return playerCardsUrls;
     }
     // This function returns the cards of the dealer
-    function showDealerCardvalue() public view returns(uint[] memory){
-        return dealercardValues;
+    
+    event returnDealerCardvale(uint[]);
+    function showDealerCardvalue() public returns(uint[] memory){
+        emit returnDealerCardvale( dealercardValues);
+        // return dealercardValues;
     }
     function showDealerCardUrls() public view returns(string[] memory){
         return dealerCardsUrls;
@@ -178,17 +183,21 @@ contract Blackjack{
     function givetwoCardsToDealer() public {
         generateTwoRandomNumbersToDealer();
     }
-    function showDealerCounter() public view returns(uint ){
-        return dealerCounter;
+    event returnDealerCounter(uint);
+    function showDealerCounter() public returns(uint ){
+        emit returnDealerCounter(dealerCounter);
+        // return dealerCounter;
     }
-    function showPlayerCounter() public view returns(uint ){
-        return playerCounter;
+    event returnPlayerCounter(uint);
+    function showPlayerCounter() public returns(uint ){
+        emit returnPlayerCounter(playerCounter);
+        // return playerCounter;
     }
 
     //* The function sums the cards values for dealer and player
-    function sumOfCards() public{
+    function sumOfCardsPlayer() public{
         uint lenOfPlayerCards = playerCardValues.length;
-        uint lenOfDealerCards = dealercardValues.length;
+        // uint lenOfDealerCards = dealercardValues.length;
 
         playerCounter = 0;
         // uint playerCounter = 0;
@@ -196,10 +205,26 @@ contract Blackjack{
             playerCounter += playerCardValues[i];
         }
         
+        // dealerCounter = 0;
+        // uint dealerCounter = 0;
+        // for(uint i = 0; i < lenOfDealerCards; i++){
+        //     dealerCounter += dealercardValues[i];
+        // }
+    } 
+    function sumOfCardsDealer() public{
+        // uint lenOfPlayerCards = playerCardValues.length;
+        uint lenOfDealerCards = dealercardValues.length;
+
+        // playerCounter = 0;
+        // uint playerCounter = 0;
+        // for(uint i = 0; i < lenOfPlayerCards; i++){
+        //     playerCounter += playerCardValues[i];
+        // }
+        
         dealerCounter = 0;
         // uint dealerCounter = 0;
-        for(uint i = 0; i < lenOfDealerCards; i++){
-            dealerCounter += dealercardValues[i];
+        for(uint j = 0; j < lenOfDealerCards; j++){
+            dealerCounter += dealercardValues[j];
         }
     }
 
@@ -210,8 +235,9 @@ contract Blackjack{
         
     }
 
+    event returnPlayerUrls(string[]);
     // The function generate 2 random cards to the player
-    function generateTwoRandomNumbersToPlayer() public {
+    function generateTwoRandomNumbersToPlayer() public returns( string[] memory) {
         uint randomNumber1 = uint(keccak256(abi.encodePacked(block.timestamp, block.difficulty))) % 13;
         uint randomNumber2 = uint(keccak256(abi.encodePacked(block.gaslimit, block.number))) % 13;
         
@@ -240,22 +266,26 @@ contract Blackjack{
         playerCardsUrls.push(card1);
         playerCardsUrls.push(card2);
 
-        sumOfCards();
+        sumOfCardsPlayer();
+        emit returnPlayerUrls(playerCardsUrls);
+        // return playerCardsUrls;
+        
     }
 
+    event returnDealerUrls(string[]);
 
     // The function generate 2 random cards to the dealer
-    function generateTwoRandomNumbersToDealer() public {
-        uint randomNumber1 = uint(keccak256(abi.encodePacked(block.timestamp, block.difficulty))) % 13;
-        uint randomNumber2 = uint(keccak256(abi.encodePacked(block.gaslimit, block.number))) % 13;
+    function generateTwoRandomNumbersToDealer() public returns( string[] memory) {
+        uint randomNumber11 = uint(keccak256(abi.encodePacked(block.timestamp, block.difficulty))) % 13;
+        uint randomNumber22 = uint(keccak256(abi.encodePacked(block.gaslimit, block.number))) % 13;
 
-        uint randomSuit1 = uint(keccak256(abi.encodePacked(block.timestamp, block.difficulty))) % 4;
-        uint randomSuit2 = uint(keccak256(abi.encodePacked(block.gaslimit, block.number))) % 4;
+        uint randomSuit11 = uint(keccak256(abi.encodePacked(block.timestamp, block.difficulty))) % 4;
+        uint randomSuit22 = uint(keccak256(abi.encodePacked(block.gaslimit, block.number))) % 4;
 
-        string memory rankNumber1 = ranks[randomNumber1];
-        string memory rankNumber2 = ranks[randomNumber2];
-        dealercardValues.push(checkValue(randomNumber1+1));
-        dealercardValues.push(checkValue(randomNumber2+1));
+        string memory rankNumber11 = ranks[randomNumber11];
+        string memory rankNumber22 = ranks[randomNumber22];
+        dealercardValues.push(checkValue(randomNumber11+1));
+        dealercardValues.push(checkValue(randomNumber22+1));
         if((dealercardValues[0] == 1 && dealercardValues[1]==10) ||
             (dealercardValues[1] == 1 && dealercardValues[0]==10)){
                 isBlackForDealer = true;
@@ -266,17 +296,17 @@ contract Blackjack{
                 finishTheGame();
 
         }
-        string memory suitNumber1 = suits[randomSuit1];
-        string memory suitNumber2 = suits[randomSuit2];
+        string memory suitNumber11 = suits[randomSuit11];
+        string memory suitNumber22 = suits[randomSuit22];
 
-        string memory card1 = createUrlForUI(string.concat(rankNumber1,suitNumber1));
-        string memory card2 = createUrlForUI(string.concat(rankNumber2,suitNumber2));
+        string memory card1 = createUrlForUI(string.concat(rankNumber11,suitNumber11));
+        string memory card2 = createUrlForUI(string.concat(rankNumber22,suitNumber22));
 
         dealerCardsUrls.push(card1);
         dealerCardsUrls.push(card2);
 
-        sumOfCards();
-
+        sumOfCardsDealer();
+        emit returnDealerUrls( dealerCardsUrls);
     }
    
     //* The function add to the player a new random card
@@ -287,7 +317,7 @@ contract Blackjack{
         uint  cardVal = getRankNum(rankNumber);
         playerCardValues.push(cardVal);
         playerCardsUrls.push(card);
-        sumOfCards();
+        sumOfCardsPlayer();
         if(playerCounter > 21){
             loosedPlayer = true;
             loosedDealer = false;
@@ -298,6 +328,7 @@ contract Blackjack{
         }
     }
 
+    // event showDealerCardPics()
     //* The function adds to the dealer cards while he arrives to 17 or more
     function dealerCardDistributer() public{
         while(dealerCounter < 17){
@@ -305,6 +336,7 @@ contract Blackjack{
         }
         canTakeNewCardDealer = false;
         gameFinished = true;
+        // emit showDealerCardPics(dealerCardsUrls);
         finishTheGame();        
     }
 
@@ -316,7 +348,7 @@ contract Blackjack{
         string memory card = string.concat(rankNumber,suitNumber);
         dealercardValues.push(getRankNum(rankNumber));
         dealerCardsUrls.push(card);
-        sumOfCards();
+        sumOfCardsDealer();
          if(dealerCounter > 21){
             loosedDealer = true;
             loosedPlayer = false;
@@ -358,8 +390,11 @@ contract Blackjack{
     }
     
     // The function returns if the player won or lost
-    function finishTheGame() internal returns(string memory){
-        
+    function finishTheGame() public returns(string memory){
+       delete playerCardValues;
+    delete playerCardsUrls;
+   delete dealercardValues;
+  delete dealerCardsUrls;
         if(dealerCounter == playerCounter){
             loosedDealer = false;
             loosedPlayer = false;

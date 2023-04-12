@@ -44,7 +44,7 @@ body{
 }
 .container{
   margin-top: 10px;
-  width: 400px;
+  /* width: 400px; */
   border: 1px solid black;
   padding: 20px;
   border-radius: 10px;
@@ -96,5 +96,42 @@ input::-webkit-inner-spin-button {
 }
 .bg-game{
   background-color: darkgreen;
-  height: 300px;
+
 }
+.dealer-cards{
+  margin: 20px;
+}
+.card-ui-sizes{
+  width:100px;
+  height:130px;
+}
+img{
+  margin-right: 10px;
+}
+.loader {
+  border: 8px solid #f3f3f3;
+  border-top: 8px solid #3498db;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+} 
+.spinner-div{
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+}
+
+
+
