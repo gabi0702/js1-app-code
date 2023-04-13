@@ -47,6 +47,22 @@ const Game = (props) => {
     console.log("final list: ", temp);
     setDealercards(temp);
     setDealerCount(dealerCountCards.logs[0].args[0].words[0]);
+    await delay(2500);
+    if (dealerCount > 21) {
+      setText("You Won! The transfer have been made");
+    } else if (playerCount > 21) {
+      setText("You lost...");
+    } else if (dealerCount <= 21 && dealerCount > playerCount) {
+      setText("You lost...");
+    } else if (playerCount <= 21 && dealerCount < playerCount) {
+      setText("You Won! The transfer have been made");
+    } else if (
+      playerCount <= 21 &&
+      dealerCount <= 21 &&
+      dealerCount === playerCount
+    ) {
+      setText("Push...!");
+    }
   }
 
   async function hit() {
@@ -72,13 +88,6 @@ const Game = (props) => {
       }
     }
   }
-  // async function sendMoney() {
-  //   const { contract, web3 } = web3Api;
-  //   let blc = web3.utils.toWei(String(sumToPlay), "ether");
-  //   console.log(blc);
-  //   await contract.contribute({ value: blc, from: account });
-  //   console.log("the function was called.");
-  // }
   async function finish() {
     const { contract } = web3Api;
     const res = await contract.finishTheGame({

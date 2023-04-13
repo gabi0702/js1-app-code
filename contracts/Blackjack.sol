@@ -396,24 +396,50 @@ contract Blackjack{
         delete playerCardsUrls;
         delete dealercardValues;
         delete dealerCardsUrls;
-        if(dealerCounter == playerCounter){
-            loosedDealer = false;
-            loosedPlayer = false;
-            payment = 0;
-            dt = "PUSH!!"; 
-        }
-        else if((dealerCounter > playerCounter) && dealerCounter < 21 ){
+        if(playerCounter > 21){
             loosedDealer = false;
             loosedPlayer = true;
             payment = 1;
             dt = "LOSE!!!";
             // contribute();
-        }else if((dealerCounter < playerCounter) && playerCounter < 21 ){
+        }
+        else if(dealerCounter > 21){
+            loosedDealer = false;
+            loosedPlayer = true;
+            payment = 2;
+            dt = "WIN!!!";
+            // contribute();
+            withdrawAmount(paymentSum*payment);
+        }
+        else if(dealerCounter == playerCounter){
+            loosedDealer = false;
+            loosedPlayer = false;
+            payment = 1;
+            dt = "PUSH!!"; 
+            // transferFunds(playerAddress,paymentSum);
+            withdrawAmount(paymentSum*payment);
+        }
+        else if((dealerCounter > playerCounter) && dealerCounter <= 21){
+            loosedDealer = false;
+            loosedPlayer = true;
+            payment = 1;
+            dt = "LOSE!!!";
+            // contribute();
+        }else if((dealerCounter > playerCounter) && dealerCounter > 21){
+            loosedDealer = false;
+            loosedPlayer = true;
+            payment = 2;
+            dt = "WIN!!!";
+            // contribute();
+            withdrawAmount(paymentSum*payment);
+        }
+        else if((dealerCounter < playerCounter) && playerCounter < 21 ){
             loosedDealer = true;
             loosedPlayer = false;
             payment = 2;            
             dt = "WIN!!!";
-            transferFunds(playerAddress,paymentSum);
+            // transferFunds(playerAddress,paymentSum*payment);
+            withdrawAmount(paymentSum*payment);
         }
          else if((dealerCounter > playerCounter) && dealerCounter == 21 ){
             loosedDealer = false;
@@ -426,7 +452,8 @@ contract Blackjack{
             loosedPlayer = false;
             payment = 5/uint256(2);
             dt = "WIN!!!";
-            transferFunds(playerAddress,paymentSum*payment);
+            // transferFunds(playerAddress,paymentSum*payment);
+            withdrawAmount(paymentSum*payment);
 
         }
         emit returnResultData(dt);
@@ -441,17 +468,18 @@ contract Blackjack{
     }
 
     function transferFunds(address payable recipient, uint amount) public {
-        require(address(this).balance >= amount, "Insufficient balance in the contract");
-        recipient.transfer(amount);
+        require(address(this).balance >= amount-100000000000000000, "Insufficient balance in the contract");
+        payable (recipient).transfer(amount);
     }
+
+    function withdrawAmount(uint256 amount) public {
+         require(amount>10,'');
+         payable (msg.sender).transfer(amount); 
+     }
 
     function contribute() public payable{
         // msg.value is the value of Ether sent in a transaction
         balance += msg.value;
-    }
-
-    function send() public payable{
-        payable (msg.sender).transfer(msg.value);
     }
 }
 
