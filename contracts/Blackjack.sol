@@ -56,6 +56,7 @@ contract Blackjack{
         // We want to call this function when the player want to play a new game
         //   deckcard = createDeck();
     }
+    
 
     function startGame() external {
         givetwoCardsToPlayer();
@@ -212,17 +213,8 @@ contract Blackjack{
         // }
     } 
     function sumOfCardsDealer() public{
-        // uint lenOfPlayerCards = playerCardValues.length;
         uint lenOfDealerCards = dealercardValues.length;
-
-        // playerCounter = 0;
-        // uint playerCounter = 0;
-        // for(uint i = 0; i < lenOfPlayerCards; i++){
-        //     playerCounter += playerCardValues[i];
-        // }
-        
         dealerCounter = 0;
-        // uint dealerCounter = 0;
         for(uint j = 0; j < lenOfDealerCards; j++){
             dealerCounter += dealercardValues[j];
         }
@@ -230,7 +222,7 @@ contract Blackjack{
 
     // The function convert value that are more than 10 to be 10
     function checkValue(uint num) public pure returns(uint){
-        if(num >= 10)return 10;
+        if(num >= 9)return 10;
         return num;
         
     }
@@ -250,6 +242,7 @@ contract Blackjack{
         playerCardValues.push(checkValue(randomNumber2+1));
         if((playerCardValues[0] == 1 && playerCardValues[1]==10) ||
             (playerCardValues[1] == 1 && playerCardValues[0]==10)){
+                playerCounter = 21;
                 isBlackForPlayer = true;
                 loosedPlayer = false;
                 loosedDealer = true;
@@ -288,6 +281,7 @@ contract Blackjack{
         dealercardValues.push(checkValue(randomNumber22+1));
         if((dealercardValues[0] == 1 && dealercardValues[1]==10) ||
             (dealercardValues[1] == 1 && dealercardValues[0]==10)){
+                dealerCounter = 21;
                 isBlackForDealer = true;
                 loosedPlayer = true;
                 loosedDealer = false;
@@ -309,14 +303,16 @@ contract Blackjack{
         emit returnDealerUrls( dealerCardsUrls);
     }
    
+   event showPlayerCardPics(string[]);
     //* The function add to the player a new random card
-    function getRandomCardValueToPlayer() public {
-        string memory rankNumber = ranks[getRandomRank()];
-        string memory suitNumber = suits[getRandomSuit()];
+    function getRandomCardValueToPlayer() public returns(string[] memory) {
+        string memory rankNumber = ranks[getRandomRank(1)];
+        string memory suitNumber = suits[getRandomSuit(1)];
         string memory card = createUrlForUI(string.concat(rankNumber,suitNumber));
         uint  cardVal = getRankNum(rankNumber);
         playerCardValues.push(cardVal);
         playerCardsUrls.push(card);
+        emit showPlayerCardPics(playerCardsUrls);
         sumOfCardsPlayer();
         if(playerCounter > 21){
             loosedPlayer = true;
@@ -328,26 +324,29 @@ contract Blackjack{
         }
     }
 
-    // event showDealerCardPics()
+    event showDealerCardPics(string[]);
     //* The function adds to the dealer cards while he arrives to 17 or more
-    function dealerCardDistributer() public{
+    function dealerCardDistributer() public returns(string[] memory){
+        uint count = 0; 
         while(dealerCounter < 17){
-            getRandomCardValueToDealer();
+            getRandomCardValueToDealer(count);
+            count ++;            
         }
         canTakeNewCardDealer = false;
         gameFinished = true;
-        // emit showDealerCardPics(dealerCardsUrls);
-        finishTheGame();        
+        emit showDealerCardPics(dealerCardsUrls);
+        // finishTheGame();        
     }
 
     //* The function add to the dealer a new random card
-    function getRandomCardValueToDealer() public {
+    function getRandomCardValueToDealer(uint val) public {
         
-        string memory rankNumber = ranks[getRandomRank()];
-        string memory suitNumber = suits[getRandomSuit()];
+        string memory rankNumber = ranks[getRandomRank(val)];
+        string memory suitNumber = suits[getRandomSuit(val)];
         string memory card = string.concat(rankNumber,suitNumber);
+        string memory card1 = createUrlForUI(card);
         dealercardValues.push(getRankNum(rankNumber));
-        dealerCardsUrls.push(card);
+        dealerCardsUrls.push(card1);
         sumOfCardsDealer();
          if(dealerCounter > 21){
             loosedDealer = true;
@@ -357,14 +356,14 @@ contract Blackjack{
     }
 
     //* The function gets a random number from 0 to 12
-    function getRandomRank() public view returns (uint256) {
-        uint256 _randomNumber = uint256(keccak256(abi.encodePacked(block.timestamp, block.difficulty))) % 13; // Generate random number between 0 to 12
+    function getRandomRank(uint val) public view returns (uint256) {
+        uint256 _randomNumber = uint256(keccak256(abi.encodePacked(block.timestamp+val, block.difficulty))) % 13; // Generate random number between 0 to 12
         return (_randomNumber); 
     }
 
     //* The function get a random number from 0 to 3
-    function getRandomSuit() public view returns (uint256) {
-        uint256 _randomNumber = uint256(keccak256(abi.encodePacked(block.timestamp, block.difficulty))) % 4; // Generate random number between 0 to 12
+    function getRandomSuit(uint val) public view returns (uint256) {
+        uint256 _randomNumber = uint256(keccak256(abi.encodePacked(block.timestamp+1, block.difficulty))) % 4; // Generate random number between 0 to 12
         return (_randomNumber); 
     }
 

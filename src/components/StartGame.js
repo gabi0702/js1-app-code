@@ -155,6 +155,7 @@ const StartGame = (props) => {
               disconnectWallet={disconnectWallet}
               showPlayerCardUrls={playerCardsPics}
               showPlayerCount={playerCount}
+              setPlayerCount={setPlayerCount}
               showDealerCardUrls={dealerCardsPics}
               showDealerCount={dealerCount}
               setDealerCount={setDealerCount}
