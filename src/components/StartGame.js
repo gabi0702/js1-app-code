@@ -55,7 +55,14 @@ const StartGame = (props) => {
   // THIS FUNCTION NEEDS TO CALL THE SMART CONTRACT FUNCTION FOR CHECKING THE INPUT SUM AND UPDATE THE VIEW TO GAME OR NOT
   async function startGame() {
     setShowSpinner(true);
-    const { contract } = web3Api;
+    const { contract, web3 } = web3Api;
+    // if (loaded && inputChecker) {
+    await contract.contribute({
+      from: account,
+      value: web3.utils.toWei(sumtoPlay, "ether"),
+    });
+    console.log("The payment has been made");
+    // }
     const rs1 = true;
     if (rs1) {
       const distributCardToPlayer =
@@ -70,7 +77,7 @@ const StartGame = (props) => {
         from: account,
       });
       console.log(
-        "dealer count cards",
+        "Player count cards",
         playerCountCards.logs[0].args[0].words[0]
       );
 
@@ -121,6 +128,14 @@ const StartGame = (props) => {
       //   console.log(distributCardToPlayer.logs[0].args[0][i]);
       // }
       //##############################################################################
+      let temp = Math.ceil({ balance });
+
+      const run = await contract.checkInput(
+        web3.utils.toWei("15", "ether"),
+        web3.utils.toWei(sumtoPlay, "ether"),
+        { from: account }
+      );
+      console.log("run: ", run);
       setShowSpinner(false);
 
       setGoToTable(true);

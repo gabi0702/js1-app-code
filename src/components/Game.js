@@ -72,12 +72,19 @@ const Game = (props) => {
       }
     }
   }
-  async function sendMoney() {
-    const { contract, web3 } = web3Api;
-    let blc = web3.utils.toWei(String(sumToPlay), "ether");
-    console.log(blc);
-    await contract.contribute({ value: blc, from: account });
-    console.log("the function was called.");
+  // async function sendMoney() {
+  //   const { contract, web3 } = web3Api;
+  //   let blc = web3.utils.toWei(String(sumToPlay), "ether");
+  //   console.log(blc);
+  //   await contract.contribute({ value: blc, from: account });
+  //   console.log("the function was called.");
+  // }
+  async function finish() {
+    const { contract } = web3Api;
+    const res = await contract.finishTheGame({
+      from: account,
+    });
+    console.log("Finish function result: ", res);
   }
 
   return (
@@ -99,7 +106,7 @@ const Game = (props) => {
       <div>{text}</div>
       <button onClick={stand}>Stand</button>
       <button onClick={hit}>Hit</button>
-      <button onClick={sendMoney}>Send Money</button>
+      <button onClick={finish}>check finish function</button>
       <button onClick={disconnectWallet}>finish the game</button>
     </div>
   );

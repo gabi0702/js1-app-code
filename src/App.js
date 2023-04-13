@@ -50,7 +50,7 @@ function App() {
   //* The function is disconnecting the Dapp from the userWallet and return the home page of the game
   async function disconnectWallet() {
     const { contract } = web3Api;
-    await contract.finishTheGame({ from: account });
+    const res = await contract.finishTheGame({ from: account });
     console.log("the function for reseting the cards has been activated");
     setAccount("");
     setBalance(0);

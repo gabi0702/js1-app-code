@@ -115,9 +115,9 @@ contract Blackjack{
         return balanceChecker;
     }
 
-    event inpuchecker(bool inputChecked);
+    event inpuchecker(bool, uint);
     //* The function gets from the frontend sum entered to play and verify if it's more than the minimum and less than the maximum
-    function checkInput(uint bal, uint input) public returns (bool){
+    function checkInput(uint bal, uint input) public returns (bool, uint){
         playerBalance = bal;
         if((input < minimum || input > maximum)){
             inputChecked = false;
@@ -127,8 +127,8 @@ contract Blackjack{
             inputChecked = true;
             paymentSum = input;
         }
-        emit inpuchecker(inputChecked);
-        return inputChecked;
+        emit inpuchecker(inputChecked,paymentSum );
+        // return inputChecked;
     }
 
     //* Checks if 2 strings are equals (helper function)
@@ -335,7 +335,7 @@ contract Blackjack{
         canTakeNewCardDealer = false;
         gameFinished = true;
         emit showDealerCardPics(dealerCardsUrls);
-        // finishTheGame();        
+        finishTheGame();        
     }
 
     //* The function add to the dealer a new random card
@@ -388,60 +388,70 @@ contract Blackjack{
         dealerCardDistributer();
     }
     
+    string dt = "";
+    event returnResultData(string);
     // The function returns if the player won or lost
     function finishTheGame() public returns(string memory){
-       delete playerCardValues;
-    delete playerCardsUrls;
-   delete dealercardValues;
-  delete dealerCardsUrls;
+        delete playerCardValues;
+        delete playerCardsUrls;
+        delete dealercardValues;
+        delete dealerCardsUrls;
         if(dealerCounter == playerCounter){
             loosedDealer = false;
             loosedPlayer = false;
-            payment = 0; 
+            payment = 0;
+            dt = "PUSH!!"; 
         }
         else if((dealerCounter > playerCounter) && dealerCounter < 21 ){
             loosedDealer = false;
             loosedPlayer = true;
             payment = 1;
+            dt = "LOSE!!!";
+            // contribute();
         }else if((dealerCounter < playerCounter) && playerCounter < 21 ){
             loosedDealer = true;
             loosedPlayer = false;
-            payment = 1;
+            payment = 2;            
+            dt = "WIN!!!";
+            transferFunds(playerAddress,paymentSum);
         }
          else if((dealerCounter > playerCounter) && dealerCounter == 21 ){
             loosedDealer = false;
             loosedPlayer = true;
             payment = 1;
+            dt = "LOSE!!!";
+            // contribute();
         }else if((dealerCounter < playerCounter) && playerCounter == 21 ){
             loosedDealer = true;
             loosedPlayer = false;
-            payment = 3/uint256(2);
-        }
+            payment = 5/uint256(2);
+            dt = "WIN!!!";
+            transferFunds(playerAddress,paymentSum*payment);
 
-        if(finishGame && loosedDealer == false && loosedPlayer == false){
-            // don't do anything
-            return "PUSH!!";
         }
-        else if(finishGame && loosedDealer == true && loosedPlayer == false){
-            // The dealer payes to the player
-            paymentToPlayer();
-            return "WIN!!!";
-        }
-        else if(finishGame && loosedDealer == false && loosedPlayer == true){
-            // The player payes to the dealer
-            contribute();
-            return "LOSE!!!";
-        }
+        emit returnResultData(dt);
       
     }
+
+
     function paymentToPlayer() public payable{
         require(address(this).balance >= paymentSum*payment, "Insufficient balance in the contract");
-        playerAddress.transfer(paymentSum * payment);
+        payable (msg.sender).transfer(paymentSum * payment);
+        // payable (msg.sender).transfer(4000000000000000000);
+    }
+
+    function transferFunds(address payable recipient, uint amount) public {
+        require(address(this).balance >= amount, "Insufficient balance in the contract");
+        recipient.transfer(amount);
     }
 
     function contribute() public payable{
         // msg.value is the value of Ether sent in a transaction
         balance += msg.value;
+    }
+
+    function send() public payable{
+        payable (msg.sender).transfer(msg.value);
     }
 }
 
