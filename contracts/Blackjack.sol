@@ -3,6 +3,18 @@ pragma solidity >=0.4.22 <0.9.0;
 
 
 contract Blackjack{
+
+    uint public numberOfPlayers;
+    mapping(address => bool) private players;
+    mapping(uint => address) private lutPlayers;
+    resultOfGame[] private won;
+    struct resultOfGame{
+        address addr;
+        bool res;
+        uint sumWon;
+    }
+  
+
    address payable public playerAddress;
     //* Keep the owner address
     address public owner;
@@ -222,7 +234,7 @@ contract Blackjack{
 
     // The function convert value that are more than 10 to be 10
     function checkValue(uint num) public pure returns(uint){
-        if(num >= 9)return 10;
+        if(num > 9)return 10;
         return num;
         
     }
@@ -235,6 +247,15 @@ contract Blackjack{
         
         uint randomSuit1 = uint(keccak256(abi.encodePacked(block.timestamp, block.difficulty))) % 4;
         uint randomSuit2 = uint(keccak256(abi.encodePacked(block.gaslimit, block.number))) % 4;
+
+        // This script is saving the number of player (distinct) - This data is public.
+        //* It also keeps updated a private map of the wallets player addresses. 
+        playerAddress = payable (msg.sender);
+        if(!players[playerAddress]){
+            uint index = numberOfPlayers++; 
+            players[playerAddress] = true;
+            lutPlayers[index] = playerAddress;
+        }
 
         string memory rankNumber1 = ranks[randomNumber1];
         string memory rankNumber2 = ranks[randomNumber2];
@@ -302,6 +323,11 @@ contract Blackjack{
         sumOfCardsDealer();
         emit returnDealerUrls( dealerCardsUrls);
     }
+
+    event showNumberOfPlayers(uint);
+    function showTotalNumOfPlayers() public{
+        emit showNumberOfPlayers(numberOfPlayers);
+    }
    
    event showPlayerCardPics(string[]);
     //* The function add to the player a new random card
@@ -314,6 +340,8 @@ contract Blackjack{
         playerCardsUrls.push(card);
         emit showPlayerCardPics(playerCardsUrls);
         sumOfCardsPlayer();
+        
+        
         if(playerCounter > 21){
             loosedPlayer = true;
             loosedDealer = false;
@@ -401,6 +429,8 @@ contract Blackjack{
             loosedPlayer = true;
             payment = 1;
             dt = "LOSE!!!";
+            won.push(resultOfGame(playerAddress, false, 0));
+
             // contribute();
         }
         else if(dealerCounter > 21){
@@ -408,6 +438,7 @@ contract Blackjack{
             loosedPlayer = true;
             payment = 2;
             dt = "WIN!!!";
+            won.push(resultOfGame(playerAddress, true, paymentSum*payment));
             // contribute();
             withdrawAmount(paymentSum*payment);
         }
@@ -424,11 +455,13 @@ contract Blackjack{
             loosedPlayer = true;
             payment = 1;
             dt = "LOSE!!!";
+            won.push(resultOfGame(playerAddress, false, 0));
             // contribute();
         }else if((dealerCounter > playerCounter) && dealerCounter > 21){
             loosedDealer = false;
             loosedPlayer = true;
             payment = 2;
+            won.push(resultOfGame(playerAddress, true, paymentSum*payment));
             dt = "WIN!!!";
             // contribute();
             withdrawAmount(paymentSum*payment);
@@ -436,7 +469,9 @@ contract Blackjack{
         else if((dealerCounter < playerCounter) && playerCounter < 21 ){
             loosedDealer = true;
             loosedPlayer = false;
-            payment = 2;            
+            payment = 2;   
+            won.push(resultOfGame(playerAddress, true, paymentSum*payment));
+         
             dt = "WIN!!!";
             // transferFunds(playerAddress,paymentSum*payment);
             withdrawAmount(paymentSum*payment);
@@ -445,12 +480,15 @@ contract Blackjack{
             loosedDealer = false;
             loosedPlayer = true;
             payment = 1;
+             won.push(resultOfGame(playerAddress, false, 0));
             dt = "LOSE!!!";
             // contribute();
         }else if((dealerCounter < playerCounter) && playerCounter == 21 ){
             loosedDealer = true;
             loosedPlayer = false;
-            payment = 5/uint256(2);
+            payment = 3;
+            won.push(resultOfGame(playerAddress, true, paymentSum*payment));
+
             dt = "WIN!!!";
             // transferFunds(playerAddress,paymentSum*payment);
             withdrawAmount(paymentSum*payment);
@@ -460,11 +498,28 @@ contract Blackjack{
       
     }
 
+    function calculatePercentageOfWin() public view returns(uint256){
+        uint _percent = 0; 
+        uint playerWon = 0;
+        uint dealerWon = 0;
+        for(uint i = 0; i < won.length; i++){
+            if(won[i].res == true){
+                playerWon ++; 
+            }else{
+                dealerWon ++;
+            }
+        }
+        if(dealerWon == 0){
+            dealerWon ++;
+        }
+        _percent = playerWon / dealerWon;
+        return _percent;
+    }
+
 
     function paymentToPlayer() public payable{
         require(address(this).balance >= paymentSum*payment, "Insufficient balance in the contract");
         payable (msg.sender).transfer(paymentSum * payment);
-        // payable (msg.sender).transfer(4000000000000000000);
     }
 
     function transferFunds(address payable recipient, uint amount) public {

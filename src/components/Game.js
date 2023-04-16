@@ -33,12 +33,12 @@ const Game = (props) => {
   async function stand() {
     // await standFunc;
     const { contract } = web3Api;
-
+    console.log(contract);
     const cards = await contract.dealerCardDistributer({ from: account });
     const dealerCountCards = await contract.showDealerCounter({
       from: account,
     });
-    await delay(1500);
+    await delay(1000);
     console.log(cards.logs[0].args[0]);
     let temp = [];
     for (let i = 0; i < cards.logs[0].args[0].length; i++) {
@@ -88,13 +88,13 @@ const Game = (props) => {
       }
     }
   }
-  async function finish() {
-    const { contract } = web3Api;
-    const res = await contract.finishTheGame({
-      from: account,
-    });
-    console.log("Finish function result: ", res);
-  }
+  // async function finish() {
+  //   const { contract } = web3Api;
+  //   const res = await contract.finishTheGame({
+  //     from: account,
+  //   });
+  //   console.log("Finish function result: ", res);
+  // }
 
   return (
     <div className="bg-game">
@@ -114,8 +114,7 @@ const Game = (props) => {
       <h3>{playerCount}</h3>
       <div>{text}</div>
       <button onClick={stand}>Stand</button>
-      <button onClick={hit}>Hit</button>
-      <button onClick={finish}>check finish function</button>
+      <button onClick={hit}>Hit New Card</button>
       <button onClick={disconnectWallet}>finish the game</button>
     </div>
   );

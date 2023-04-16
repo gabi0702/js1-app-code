@@ -117,6 +117,11 @@ const StartGame = (props) => {
 
       console.log("Player Cards Urls are: ", showPlayerCardUrls);
 
+      // const totalNumOfPlayers = await contract.showTotalNumOfPlayers({
+      //   from: account,
+      // });
+      // console.log("number of players:", totalNumOfPlayers);
+
       //##############################################################################
       // let len = distributCardToPlayer.logs[0].args[0];
       // let len1 = len.length;
