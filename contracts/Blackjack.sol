@@ -208,27 +208,76 @@ contract Blackjack{
     }
 
     //* The function sums the cards values for dealer and player
+   //* The function sums the cards values for dealer and player
     function sumOfCardsPlayer() public{
         uint lenOfPlayerCards = playerCardValues.length;
-        // uint lenOfDealerCards = dealercardValues.length;
 
         playerCounter = 0;
-        // uint playerCounter = 0;
+        // if(lenOfPlayerCards > 2){
+        uint countPlayerAces = 0;
+        uint maxCountPlayer = 0;
+        uint minCountPlayer = 0;
+        uint playerCountNotAces = 0;
+        countPlayerAces = 0;
+        playerCountNotAces = 0;
+        for(uint j=0; j < lenOfPlayerCards; j++){
+            if(playerCardValues[j] == 1){
+                countPlayerAces ++;
+            }else{
+                playerCountNotAces += playerCardValues[j];
+            }
+        }
+        if(countPlayerAces > 0){
+        maxCountPlayer = 11 + (countPlayerAces - 1);
+        minCountPlayer = countPlayerAces;
+        
+        if(maxCountPlayer + playerCountNotAces <= 21){
+            dealerCounter = playerCountNotAces + maxCountPlayer;
+        }
+        else{
+            dealerCounter = playerCountNotAces + minCountPlayer;
+        }
+        }else{
         for(uint i = 0; i < lenOfPlayerCards; i++){
+
             playerCounter += playerCardValues[i];
         }
-        
-        // dealerCounter = 0;
-        // uint dealerCounter = 0;
-        // for(uint i = 0; i < lenOfDealerCards; i++){
-        //     dealerCounter += dealercardValues[i];
-        // }
+        }
     } 
     function sumOfCardsDealer() public{
         uint lenOfDealerCards = dealercardValues.length;
         dealerCounter = 0;
+
+        uint countDealerAces;
+        uint dealerCountNotAces;
+        uint maxCount = 0;
+        uint minCount = 0;
+         countDealerAces = 0;
+         dealerCountNotAces = 0;
+        // if(lenOfDealerCards > 2){
+        for(uint j=0; j < lenOfDealerCards; j++){
+            if(dealercardValues[j] == 1){
+                countDealerAces ++;
+            }
+            else{
+                dealerCountNotAces += dealercardValues[j];
+            }
+        }
+        if(countDealerAces > 0){
+         maxCount = 11 + (countDealerAces - 1);
+         minCount = countDealerAces;
+
+        if(maxCount + dealerCountNotAces <= 21){
+            dealerCounter = dealerCountNotAces + maxCount;
+        }
+        else{
+            dealerCounter = dealerCountNotAces + minCount;
+        }
+        }
+        else{
         for(uint j = 0; j < lenOfDealerCards; j++){
             dealerCounter += dealercardValues[j];
+        }
         }
     }
 
