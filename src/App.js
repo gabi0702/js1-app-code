@@ -137,7 +137,7 @@ function App() {
           />
         ) : (
           <div>
-            <div className="title">Blackjack Game</div>
+            <div className="title">BLACKJACK GAME</div>
             <div className="subtitle">
               Play your <p className="txt-subtitle">online casino</p> easily
             </div>

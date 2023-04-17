@@ -228,20 +228,20 @@ contract Blackjack{
             }
         }
         if(countPlayerAces > 0){
-        maxCountPlayer = 11 + (countPlayerAces - 1);
-        minCountPlayer = countPlayerAces;
-        
-        if(maxCountPlayer + playerCountNotAces <= 21){
-            dealerCounter = playerCountNotAces + maxCountPlayer;
-        }
-        else{
-            dealerCounter = playerCountNotAces + minCountPlayer;
-        }
+            maxCountPlayer = 11 + (countPlayerAces - 1);
+            minCountPlayer = countPlayerAces;
+            
+            if(maxCountPlayer + playerCountNotAces <= 21){
+                playerCounter = playerCountNotAces + maxCountPlayer;
+            }
+            else{
+                playerCounter = playerCountNotAces + minCountPlayer;
+            }
         }else{
-        for(uint i = 0; i < lenOfPlayerCards; i++){
+            for(uint i = 0; i < lenOfPlayerCards; i++){
 
-            playerCounter += playerCardValues[i];
-        }
+                playerCounter += playerCardValues[i];
+            }
         }
     } 
     function sumOfCardsDealer() public{

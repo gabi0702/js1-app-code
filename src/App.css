@@ -43,18 +43,21 @@ body{
   }
 }
 .container{
-  margin-top: 10px;
+  background: rgb(101,209,116);
+background: linear-gradient(0deg, rgba(101,209,116,1) 0%, rgba(0,116,1,1) 100%);
+  margin-top: 5px;
   /* width: 400px; */
-  border: 1px solid black;
+  border: 1px solid rgb(83, 83, 83);
   padding: 20px;
   border-radius: 10px;
-  background-color: #eef3f7;
+  /* background-color: #eef3f7; */
 }
 .title, .subtitle{
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   font-size: 20px;
   font-weight: 600;
   margin-bottom: 5px;
+  color: white
 }
 .subtitle{
   display: flex;
@@ -66,7 +69,7 @@ body{
 
 }
 .txt-subtitle{
-  color: rgba(255, 0, 0, 0.755);
+  color: rgb(255, 0, 0);
   margin-right: 5px;
   margin-left: 5px;
 }
@@ -74,6 +77,7 @@ body{
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   font-size: 10px;
   margin-top:-20px;
+  color: white;
 }
 .disconnect-btn{
   margin-top: 20px;
@@ -95,7 +99,7 @@ input::-webkit-inner-spin-button {
   margin-top: 40px;
 }
 .bg-game{
-  background-color: darkgreen;
+  /* background-color: darkgreen; */
 
 }
 .dealer-cards{
@@ -124,6 +128,17 @@ img{
     transform: rotate(360deg);
   }
 } 
+.txt1{
+  color: white
+}
+#pic{
+  position:absolute;
+  margin-left: -220px;
+  margin-top: 60px;
+}
+#child, #ch{
+  position: relative;
+}
 .spinner-div{
     display: flex;
     flex-direction: column;
@@ -131,11 +146,255 @@ img{
     justify-content: center;
     align-items: center;
     align-content: center;
-}
+    color:white;
+  }
+
 
 .dist{
-  height: 60px;
+  height: 30px;
+}
+
+/* CSS */
+.button-75, #btn1{
+  align-items: center;
+  background-image: linear-gradient(135deg, #f34079 40%, #fc894d);
+  border-radius: 10px;
+  box-sizing: border-box;
+  border: 0;
+  color: #fff;
+  cursor: pointer;
+  /* display: flex; */
+  /* flex-direction: column; */
+  font-family: "Codec cold",sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  height: 35px;
+  justify-content: center;
+  letter-spacing: .4px;
+  line-height: 1;
+  max-width: 100%;
+  border: 1px solid black;
+
+   padding-left: 20px;
+  padding-right: 20px; 
+  /* padding-top: 3px; */
+  text-decoration: none;
+  /* text-transform: uppercase; */
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+ 
+/* .button-75:active {
+  outline: 0;
+} */
+
+#btn1:hover {
+  outline: 0;
+  background-image: linear-gradient(135deg, #fc894d,#f34079 40%);
+
+}
+
+#btn1 span {
+  transition: all 200ms;
+}
+
+#btn1:hover span {
+  transform: scale(.9);
+  opacity: .75;
+}
+
+@media screen and (max-width: 991px) {
+  /* #btn {
+    font-size: 15px;
+    height: 50px;
+  }
+
+  #btn span {
+    line-height: 50px;
+  } */
+}
+.button-75, #btn{
+  align-items: center;
+  background-image: linear-gradient(135deg, #00683e 40%, #0aff64);
+  border-radius: 10px;
+  box-sizing: border-box;
+  border: 1px solid black;
+  color: #fff;
+  cursor: pointer;
+  /* display: flex; */
+  /* flex-direction: column; */
+  font-family: "Codec cold",sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  height: 35px;
+  justify-content: center;
+  letter-spacing: .4px;
+  line-height: 1;
+  max-width: 100%;
+
+   padding-left: 20px;
+  padding-right: 20px; 
+  /* padding-top: 3px; */
+  text-decoration: none;
+  /* text-transform: uppercase; */
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+ 
+/* .button-75:active {
+  outline: 0;
+} */
+
+#btn:hover {
+  outline: 0;
+  background-image: linear-gradient(135deg, #0aff64,#00683e 40%);
+
+}
+
+#btn span {
+  transition: all 200ms;
+}
+
+#btn:hover span {
+  transform: scale(.9);
+  opacity: .75;
+}
+
+@media screen and (max-width: 991px) {
+  /* #btn {
+    font-size: 15px;
+    height: 50px;
+  }
+
+  #btn span {
+    line-height: 50px;
+  } */
+}
+
+label{
+  color: white;
+  margin-right: 20px
+}
+input {
+  margin: 0 2rem;
+  width: fit-content;
+  height: fit-content;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-right: 10px;
+  padding-left: 10px;
+  border-radius: 1rem;
+  font-size: 14px;
+  text-align: center;
+  border: 1px solid black;
+  box-shadow: inset 0.2rem 0.2rem 0.5rem var(--greyLight-2),
+    inset -0.2rem -0.2rem 0.5rem var(--white);
+  background: none;
+  font-family: inherit;
+  color: white;
+}
+input::-moz-placeholder {
+  color: var(--greyLight-3);
+}
+input:-ms-input-placeholder {
+  color: var(--greyLight-3);
+}
+input::placeholder {
+  color: white;
+}
+input:focus {
+  outline: none;
+  box-shadow: 0.3rem 0.3rem 0.6rem var(--greyLight-2),
+    -0.2rem -0.2rem 0.5rem var(--white);
+}
+.txt-error{
+  color:rgb(160, 0, 0);
+  margin-top: 15px;
+}
+
+.btnn{
+  margin-top: 15px;
+}
+.btn-game{
+  margin-top: -20px;
+}
+#stand-btn{
+  margin-right: 20px;
+}
+#finish-btn{
+  /* margin-top: 20px; */
 }
 
 
 
+/* CSS */
+.btn-game {
+  background-color: #36A9AE;
+  background-image: linear-gradient(#37ADB2, #329CA0);
+  border: 1px solid #2A8387;
+  border-radius: 4px;
+  box-shadow: rgba(0, 0, 0, 0.12) 0 1px 1px;
+  color: #FFFFFF;
+  cursor: pointer;
+  font-family: -apple-system,".SFNSDisplay-Regular","Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-size: 13px;
+  line-height: 100%;
+  margin: 0;
+  outline: 0;
+  padding: 11px 15px 12px;
+  text-align: center;
+  transition: box-shadow .05s ease-in-out,opacity .05s ease-in-out;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  width: fit-content;
+  margin: 10px;
+  
+}
+
+.btn-game:hover {
+  box-shadow: rgba(255, 255, 255, 0.3) 0 0 2px inset, rgba(0, 0, 0, 0.4) 0 1px 2px;
+  text-decoration: none;
+  transition-duration: .15s, .15s;
+}
+
+.btn-game:active {
+  box-shadow: rgba(0, 0, 0, 0.15) 0 2px 4px inset, rgba(0, 0, 0, 0.4) 0 1px 1px;
+}
+
+.btn-game:disabled {
+  cursor: not-allowed;
+  opacity: .6;
+}
+
+.btn-game:disabled:active {
+  pointer-events: none;
+}
+
+.btn-game:disabled:hover {
+  box-shadow: none;
+}
+
+.btn-game1{
+  margin-right: -100px;
+  background-color: transparent;
+  color:white;
+  font-weight: 1000;
+  border: none;
+}
+.btn-game1:hover{
+  font-weight: bold;
+  margin-top: -20px;
+}
+#box{
+  display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	justify-content: center;
+	align-items: center;
+	align-content: center;
+}

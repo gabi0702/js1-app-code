@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../App.css";
 import reverse from "../assets/reverse1.png";
-
+import exit from "../assets/exit.png";
 const Game = (props) => {
   const disconnectWallet = props.disconnectWallet;
   const [notFinded, setNotFinded] = useState(false);
@@ -38,6 +38,8 @@ const Game = (props) => {
     const dealerCountCards = await contract.showDealerCounter({
       from: account,
     });
+    console.log("dealer Cards after stand: ", cards);
+    console.log("dealer Counter after stand: ", dealerCountCards);
     await delay(1000);
     console.log(cards.logs[0].args[0]);
     let temp = [];
@@ -50,17 +52,17 @@ const Game = (props) => {
     await delay(2500);
     if (dealerCount > 21) {
       setText("You Won! The transfer have been made");
-    } else if (playerCount > 21) {
+    }
+    if (playerCount > 21) {
       setText("You lost...");
-    } else if (dealerCount <= 21 && dealerCount > playerCount) {
+    }
+    if (dealerCount <= 21 && playerCount <= 21 && dealerCount > playerCount) {
       setText("You lost...");
-    } else if (playerCount <= 21 && dealerCount < playerCount) {
+    }
+    if (playerCount <= 21 && dealerCount <= 21 && dealerCount < playerCount) {
       setText("You Won! The transfer have been made");
-    } else if (
-      playerCount <= 21 &&
-      dealerCount <= 21 &&
-      dealerCount === playerCount
-    ) {
+    }
+    if (playerCount <= 21 && dealerCount <= 21 && dealerCount === playerCount) {
       setText("Push...!");
     }
   }
@@ -98,6 +100,12 @@ const Game = (props) => {
 
   return (
     <div className="bg-game">
+      <button className="btn-game1" id="finish-btn" onClick={disconnectWallet}>
+        <div id="box">
+          <img src={exit} alt="" width="20" height="20" />
+          Leave the game
+        </div>
+      </button>
       <h3>Dealer</h3>
       {index1 ? <div></div> : <h3>{dealerCount}</h3>}
       {dealercards.map((card, index) =>
@@ -113,9 +121,12 @@ const Game = (props) => {
       ))}
       <h3>{playerCount}</h3>
       <div>{text}</div>
-      <button onClick={stand}>Stand</button>
-      <button onClick={hit}>Hit New Card</button>
-      <button onClick={disconnectWallet}>finish the game</button>
+      <button className="btn-game" id="stand-btn" onClick={stand}>
+        Stand
+      </button>
+      <button className="btn-game" id="hit-btn" onClick={hit}>
+        Hit New Card
+      </button>
     </div>
   );
 };

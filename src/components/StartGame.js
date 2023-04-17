@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Game from "./Game";
-
+import pic from "../assets/pic.png";
 import Web3 from "web3";
 
 import "../App.css";
@@ -165,105 +165,124 @@ const StartGame = (props) => {
   }
 
   return (
-    <div>
-      {showSpinner ? (
-        <Spinner />
+    <div id="background-game">
+      {showSpinner || goToTable ? (
+        <div></div>
       ) : (
-        <div>
-          {goToTable ? (
-            <Game
-              disconnectWallet={disconnectWallet}
-              showPlayerCardUrls={playerCardsPics}
-              showPlayerCount={playerCount}
-              setPlayerCount={setPlayerCount}
-              showDealerCardUrls={dealerCardsPics}
-              showDealerCount={dealerCount}
-              setDealerCount={setDealerCount}
-              index={index}
-              setIndex={setIndex}
-              web3Api={web3Api}
-              account={account}
-              setDealerCardsPics={setDealerCardsPics}
-              hitCard={""}
-              sumtoPlay={sumtoPlay}
-            />
-          ) : (
-            <div>
-              <h2>We have found a wallet!</h2>
-              <p>Account: {account}</p>
-              <p>Balance: {balance} ETH</p>
-              {canPlay ? (
-                // If the balance is anough it shows the lets play button
-                <button onClick={openInputField}>Let's Play</button>
-              ) : (
-                // If the balance is not anough it shows the check again btn and the error text
-                <div>
-                  <div id="low-balance-error">
-                    You don't have anough balance in your metamask wallet to
-                    play the blackjack game.
-                  </div>
-                  <button onClick={checkBalanceAgain}>Check Again</button>
-                </div>
-              )}
-              {showInput ? (
-                <div id="input-div">
-                  <label htmlFor="sumToPlay">
-                    Enter the sum of eth you want to play:
-                  </label>
-                  <input
-                    type="number"
-                    id="sumToPlay"
-                    placeholder="0.01 Eth"
-                    value={sumtoPlay}
-                    onChange={async (e) => {
-                      setStart(false);
-                      setSumToPlay(e.target.value);
-                      checkIfInputIsGood(e.target.value);
-                    }}
-                  />
-                  {canPlay && inputChecker ? (
-                    <button onClick={startGame}>Start Playing</button>
-                  ) : (
-                    <div></div>
-                  )}
-
-                  {start ? (
-                    <div></div>
-                  ) : (
-                    <div>
-                      {inputChecker ? (
-                        <div>{console.log("The player can play")}</div>
-                      ) : (
-                        <div>
-                          {loaded ? (
-                            <div></div>
-                          ) : (
-                            <div>
-                              You Cannot Play, change the sum your entered...
-                              <div>
-                                the min is 0.01eth and the max is 1eth to play
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div></div>
-              )}
-              {account ? (
-                <button className="disconnect-btn" onClick={disconnectWallet}>
-                  Disconnect
-                </button>
-              ) : (
-                <div>No wallet connected.</div>
-              )}
-            </div>
-          )}
-        </div>
+        <img id="pic" src={pic} width="200" heigh="300" alt="" />
       )}
+      <div id="child">
+        {showSpinner ? (
+          <Spinner />
+        ) : (
+          <div>
+            {goToTable ? (
+              <Game
+                disconnectWallet={disconnectWallet}
+                showPlayerCardUrls={playerCardsPics}
+                showPlayerCount={playerCount}
+                setPlayerCount={setPlayerCount}
+                showDealerCardUrls={dealerCardsPics}
+                showDealerCount={dealerCount}
+                setDealerCount={setDealerCount}
+                index={index}
+                setIndex={setIndex}
+                web3Api={web3Api}
+                account={account}
+                setDealerCardsPics={setDealerCardsPics}
+                hitCard={""}
+                sumtoPlay={sumtoPlay}
+              />
+            ) : (
+              <div id="ch">
+                <h2 className="txt1">We have found a wallet!</h2>
+                <p className="txt1">Account: {account}</p>
+                <p className="txt1">Balance: {balance} ETH</p>
+                {canPlay ? (
+                  // If the balance is anough it shows the lets play button
+                  <button id="btn" onClick={openInputField}>
+                    Let's Play
+                  </button>
+                ) : (
+                  // If the balance is not anough it shows the check again btn and the error text
+                  <div>
+                    <div id="low-balance-error">
+                      You don't have anough balance in your metamask wallet to
+                      play the blackjack game.
+                    </div>
+                    <button id="btn" onClick={checkBalanceAgain}>
+                      Check Again
+                    </button>
+                  </div>
+                )}
+                {showInput ? (
+                  <div>
+                    <div id="input-div">
+                      <label htmlFor="sumToPlay">
+                        Enter the sum of eth you want to play:
+                      </label>
+                      <input
+                        type="number"
+                        id="sumToPlay"
+                        placeholder="0.01 Eth"
+                        value={sumtoPlay}
+                        onChange={async (e) => {
+                          setStart(false);
+                          setSumToPlay(e.target.value);
+                          checkIfInputIsGood(e.target.value);
+                        }}
+                      />
+                    </div>
+                    {canPlay && inputChecker ? (
+                      <button id="btn" className="btnn" onClick={startGame}>
+                        Start Playing
+                      </button>
+                    ) : (
+                      <div></div>
+                    )}
+
+                    {start ? (
+                      <div></div>
+                    ) : (
+                      <div>
+                        {inputChecker ? (
+                          <div>{console.log("The player can play")}</div>
+                        ) : (
+                          <div>
+                            {loaded ? (
+                              <div></div>
+                            ) : (
+                              <div className="txt-error">
+                                You Cannot Play, change the sum your entered...
+                                <div className="txt-error">
+                                  the min is 0.01eth and the max is 1eth to play
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div></div>
+                )}
+                {account ? (
+                  <button
+                    id="btn1"
+                    className="disconnect-btn"
+                    onClick={disconnectWallet}
+                  >
+                    Disconnect
+                  </button>
+                ) : (
+                  <div>No wallet connected.</div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
