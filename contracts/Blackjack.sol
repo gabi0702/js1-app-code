@@ -547,22 +547,28 @@ contract Blackjack{
       
     }
 
-    function calculatePercentageOfWin() public view returns(uint256){
+    string d = "hello";
+    event returnData(string);
+
+    function calculatePercentageOfWin() public{
+        d = "HELLO WORLD";
         uint _percent = 0; 
         uint playerWon = 0;
-        uint dealerWon = 0;
+        uint numberOfGames = 0;
         for(uint i = 0; i < won.length; i++){
+            numberOfGames ++;
             if(won[i].res == true){
                 playerWon ++; 
-            }else{
-                dealerWon ++;
             }
         }
-        if(dealerWon == 0){
-            dealerWon ++;
+        if(numberOfGames == 0){
+            _percent = 0;
+        }else{
+            _percent = playerWon / numberOfGames;
         }
-        _percent = playerWon / dealerWon;
-        return _percent;
+
+        emit returnData(d);
+
     }
 
 
@@ -582,28 +588,7 @@ contract Blackjack{
      }
 
     function contribute() public payable{
-        // msg.value is the value of Ether sent in a transaction
         balance += msg.value;
     }
+
 }
-
-    // mapping(address => uint256) public balances;
-
-    // function deposit() public payable {
-    //     balances[msg.sender] += msg.value;
-    // }
-
-    // function collect() public {
-    //     uint256 amount = balances[msg.sender];
-    //     require(amount > 0, "No balance to withdraw");
-
-    //     balances[msg.sender] = 0;
-    //     payable(address(this)).transfer(amount);
-    // }
-
-
-    // function paymentToDealer() public payable{
-    //     require(address(this).balance >= paymentSum*payment, "Insufficient balance in the contract");
-    //     playerAddress.transfer(paymentSum * payment);
-    // }
-// }

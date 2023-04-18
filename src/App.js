@@ -57,6 +57,12 @@ function App() {
     setIsConnected(false);
   }
 
+  // async function loadHistory() {
+  //   const { contract } = web3Api;
+  //   const data = await contract.calculatePercentageOfWin({ from: account });
+  //   console.log("Data", data);
+  // }
+
   //* The function runs when the user want to connect his wallet to start playing
   function connectFunction() {
     if (isConnected === false) {
@@ -74,6 +80,7 @@ function App() {
               ],
             });
             const accounts = await web3.eth.getAccounts(); // Get the wallet account address
+
             setIndex(true);
             const acc = accounts[0]; // Update the account variable
             console.log("account number", acc);
